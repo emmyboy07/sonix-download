@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
 
 const app = express();
 const PORT = 5000;
@@ -15,7 +15,8 @@ let browser;
 async function startBrowser() {
     if (!browser) {
         browser = await puppeteer.launch({
-            headless: true,
+            headless: "new",  // Fix deprecated headless mode
+            executablePath: "/usr/bin/chromium",  // Use installed Chromium
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
