@@ -147,8 +147,17 @@ app.get("/get_movie_link", async (req, res) => {
     res.json({ movie_link: movieData.available_options[resolution] });
 });
 
-app.listen(PORT, async () => {
+const server = app.listen(PORT, async () => {
     await startBrowser();
     console.log(`✅ Server is running on port ${PORT}`);
 });
 
+// Handle port conflict errors
+server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+        console.error(`❌ Port ${PORT} is already in use. Trying another port...`);
+        process.exit(1);
+    } else {
+        console.error(`❌ Server error:`, err);
+    }
+});
