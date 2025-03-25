@@ -1,13 +1,11 @@
 const express = require("express");
 const cors = require("cors");
-const puppeteer = require("puppeteer-core");
+const puppeteer = require("puppeteer");
 
 const app = express();
 const PORT = 5000;
 
 app.use(cors());
-
-const BASE_URL = "https://netupserver.com/film/";
 
 let browser;
 
@@ -15,14 +13,13 @@ let browser;
 async function startBrowser() {
     if (!browser) {
         browser = await puppeteer.launch({
-            headless: "new",  // Fix deprecated headless mode
-            executablePath: "/usr/bin/chromium",  // Use installed Chromium
+            headless: "new",  // Use the new Puppeteer headless mode
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage",
                 "--disable-accelerated-2d-canvas",
-                "--disable-gpu",
+                "--disable-gpu"
             ],
         });
     }
