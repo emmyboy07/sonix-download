@@ -3,9 +3,11 @@ const cors = require("cors");
 const puppeteer = require("puppeteer");
 
 const app = express();
-const DEFAULT_PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
 app.use(cors());
+
+const BASE_URL = "https://netupserver.com/film/";
 
 let browser;
 
@@ -13,22 +15,17 @@ let browser;
 async function startBrowser() {
     if (!browser) {
         browser = await puppeteer.launch({
-            headless: "new",  // Use Puppeteer's built-in Chromium
+            headless: true,
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
                 "--disable-dev-shm-usage",
                 "--disable-accelerated-2d-canvas",
-                "--disable-gpu"
+                "--disable-gpu",
             ],
         });
     }
 }
-
-app.listen(PORT, async () => {
-    await startBrowser();
-    console.log(`✅ Server is running on http://127.0.0.1:${PORT}`);
-});
 
 // Get available download options
 async function getMovieOptions(year, title) {
@@ -147,22 +144,7 @@ app.get("/get_movie_link", async (req, res) => {
     res.json({ movie_link: movieData.available_options[resolution] });
 });
 
-// Function to start the server and retry a new port if needed
-function startServer(port) {
-    const server = app.listen(DEFAULT_PORT, async () => {
-        await startBrowser();
-        console.log(`✅ Server is running on port ${port}`);
-    });
-
-    server.on("error", (err) => {
-        if (err.code === "EADDRINUSE") {
-            console.error(`❌ Port ${port} is in use. Trying port ${port + 1}...`);
-            startServer(port + 1); // Try the next port
-        } else {
-            console.error(`❌ Server error:`, err);
-            process.exit(1);
-        }
-    });
-}
-
-startServer(parseInt(DEFAULT_PORT, 10));
+app.listen(PORT, async () => {
+    await startBrowser();
+    console.log(`✅ Server is running on http://127.0.0.1:${PORT}`);
+});
