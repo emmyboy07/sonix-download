@@ -149,7 +149,7 @@ app.get("/get_movie_link", async (req, res) => {
 
 // Function to start the server and retry a new port if needed
 function startServer(port) {
-    const server = app.listen(port, async () => {
+    const server = app.listen(DEFAULT_PORT, async () => {
         await startBrowser();
         console.log(`✅ Server is running on port ${port}`);
     });
