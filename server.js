@@ -3,7 +3,7 @@ const cors = require("cors");
 const puppeteer = require("puppeteer");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const DEFAULT_PORT = process.env.PORT || 5000;
 
 app.use(cors());
 
@@ -147,17 +147,22 @@ app.get("/get_movie_link", async (req, res) => {
     res.json({ movie_link: movieData.available_options[resolution] });
 });
 
-const server = app.listen(PORT, async () => {
-    await startBrowser();
-    console.log(`✅ Server is running on port ${PORT}`);
-});
+// Function to start the server and retry a new port if needed
+function startServer(port) {
+    const server = app.listen(port, async () => {
+        await startBrowser();
+        console.log(`✅ Server is running on port ${port}`);
+    });
 
-// Handle port conflict errors
-server.on("error", (err) => {
-    if (err.code === "EADDRINUSE") {
-        console.error(`❌ Port ${PORT} is already in use. Trying another port...`);
-        process.exit(1);
-    } else {
-        console.error(`❌ Server error:`, err);
-    }
-});
+    server.on("error", (err) => {
+        if (err.code === "EADDRINUSE") {
+            console.error(`❌ Port ${port} is in use. Trying port ${port + 1}...`);
+            startServer(port + 1); // Try the next port
+        } else {
+            console.error(`❌ Server error:`, err);
+            process.exit(1);
+        }
+    });
+}
+
+startServer(parseInt(DEFAULT_PORT, 10));
