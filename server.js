@@ -13,7 +13,7 @@ let browser;
 async function startBrowser() {
     if (!browser) {
         browser = await puppeteer.launch({
-            headless: "new",  // Use the new Puppeteer headless mode
+            headless: "new",  // Use Puppeteer's built-in Chromium
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -24,6 +24,11 @@ async function startBrowser() {
         });
     }
 }
+
+app.listen(PORT, async () => {
+    await startBrowser();
+    console.log(`✅ Server is running on http://127.0.0.1:${PORT}`);
+});
 
 // Get available download options
 async function getMovieOptions(year, title) {
