@@ -1,0 +1,11 @@
+services:
+  - name: flask-selenium-app
+    type: web
+    runtime: python
+    region: oregon
+    plan: free
+    envVars:
+      - key: PORT
+        value: 5000
+    buildCommand: pip install -r requirements.txt
+    startCommand: ./start.sh
